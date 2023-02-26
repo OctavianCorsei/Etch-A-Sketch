@@ -8,6 +8,8 @@ let colorOptionPicker = document.getElementById('colorPicker');
 let colorPreviewWindow = document.getElementById('colorPreview');
 let hexaPreviewWindow = document.getElementById('hexaPreview');
 let colorPickerButton = document.getElementById('customColor');
+let randomCheckbox  = document.getElementById('randomColor');
+let isRandom = false;
 let currentColor = 'white';
 let mouseDown = 0;
 
@@ -21,6 +23,10 @@ sizeOptionClick.addEventListener('click', createCanvas);
 colorOptionPicker.addEventListener('click', pickColor);
 canvas.addEventListener('mouseover', fillPixel);
 colorPickerButton.addEventListener('change', newColorPicked);
+randomCheckbox.addEventListener('change', () =>{
+    isRandom  = !isRandom;
+    console.log(isRandom);
+});
 
 //reset button
 let resetButton = document.getElementById('resetCanvas');
@@ -87,7 +93,13 @@ function fillPixel(e){
     if(mouseDown){
         let thisPixel = e.target;
         console.log(thisPixel);
-        thisPixel.style.backgroundColor = currentColor;
+        if(!isRandom)
+            thisPixel.style.backgroundColor = `${currentColor}`;
+        else if(isRandom){
+            currentColor = randomRBG();
+            console.log(currentColor);
+            thisPixel.style.backgroundColor = `${currentColor}`;
+        }
     }
 }
 
@@ -103,7 +115,6 @@ function adjustCanvasSize(canvasSize){
 }
 
 function newColorPicked(e) {
-    //
     updateBrushColor(e.target.value);
     console.log(e.target.value);
 }
@@ -152,4 +163,11 @@ function initializeCanvas(size){
     adjustCanvasSize(size);
     pixelSize = canvas.clientHeight / size;
     createPixels(size, pixelSize);
+}
+
+function randomRBG(){
+    let a = Math.floor(Math.random() * 255);
+    let b = Math.floor(Math.random() * 255);
+    let c = Math.floor(Math.random() * 255);
+    return `rgb(${a}, ${b}, ${c})`;
 }
