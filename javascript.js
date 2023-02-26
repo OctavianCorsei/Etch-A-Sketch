@@ -7,28 +7,33 @@ let canvas = document.getElementById('mainCanvas');
 let colorOptionPicker = document.getElementById('colorPicker');
 let colorPreviewWindow = document.getElementById('colorPreview');
 let hexaPreviewWindow = document.getElementById('hexaPreview');
+let colorPickerButton = document.getElementById('customColor');
 let currentColor = 'white';
 let mouseDown = 0;
 
 //initialize dataset and tools
 initializeColorSet();
 initializePreviewBar();
-initializeCanvas();
-
-//reset button
-let resetButton = document.getElementById('resetCanvas');
-resetButton.addEventListener('click', () => {
-    var children = canvas.children;
-        for(var i=0; i<children.length; i++){
-            var child = children[i];
-            child.style.color = "white";
-        }
-});
+initializeCanvas(16);
 
 //all event handlers
 sizeOptionClick.addEventListener('click', createCanvas);
 colorOptionPicker.addEventListener('click', pickColor);
 canvas.addEventListener('mouseover', fillPixel);
+colorPickerButton.addEventListener('change', newColorPicked);
+
+//reset button
+let resetButton = document.getElementById('resetCanvas');
+resetButton.addEventListener('click', () => {
+    let children = canvas.children;
+    for(let i=0; i<children.length; i++){
+        let child = children[i];
+        child.style.backgroundColor = "#f4f4f4";
+    }
+    updateBrushColor(currentColor);
+});
+
+
 
 //color the canvas while mouse pressed fucntionality
 canvas.addEventListener('mouseleave', () => {
@@ -43,12 +48,9 @@ canvas.onmouseup = function () {
 
 //when selecting new canvas size replace the existing pixels
 function createCanvas(e){
-    if(e.target.type == 'submit' && !e.target.classList.contains('resetCanvas')){
+    if(e.target.type == 'submit'){
         canvasSize = e.target.getAttribute('data-value');
-        canvas.replaceChildren();
-        adjustCanvasSize(canvasSize);
-        pixelSize = canvas.clientHeight / canvasSize;
-        createPixels(canvasSize, pixelSize);
+        initializeCanvas(canvasSize);
     }
 }
 
@@ -100,6 +102,12 @@ function adjustCanvasSize(canvasSize){
     canvas.style.width = `${wantedSize}px`;
 }
 
+function newColorPicked(e) {
+    //
+    updateBrushColor(e.target.value);
+    console.log(e.target.value);
+}
+
 //create new color and add it to the option list
 function createColorChoice(wantedColor){
     let newColor = document.createElement('div');
@@ -109,6 +117,7 @@ function createColorChoice(wantedColor){
     colorOptionPicker.appendChild(newColor);
 }
 
+//change brush color and preview color
 function updateBrushColor(selectedColor){
     currentColor = selectedColor;
     changePreviewColor(selectedColor);
@@ -138,6 +147,9 @@ function initializePreviewBar(){
 }
 
 //initialize canvas 128x128
-function initializeCanvas(){
-    
+function initializeCanvas(size){
+    canvas.replaceChildren();
+    adjustCanvasSize(size);
+    pixelSize = canvas.clientHeight / size;
+    createPixels(size, pixelSize);
 }
